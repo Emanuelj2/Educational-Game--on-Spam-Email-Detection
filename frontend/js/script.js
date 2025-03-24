@@ -4,7 +4,7 @@ document.getElementById("create_account").addEventListener("submit", async (even
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
     const password2 = document.getElementById("reenterPassword").value;
-    const email = docunment.getElementById("email").value;
+    const email = document.getElementById("email").value;
     const age = document.getElementById("age").value;
 
     if(password !== password2){

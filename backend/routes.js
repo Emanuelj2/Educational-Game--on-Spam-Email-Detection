@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const db = require('./db');
 
 const router = express.Router();
-
+/*
 router.post('/login', (req, res) =>{
     const { username, password} = req.body;
 
@@ -23,7 +23,7 @@ router.post('/login', (req, res) =>{
     });
     });
 });
-
+*/
 
 //create account and add it to the database if the username is not already taken
 //along with hashing the password for security
