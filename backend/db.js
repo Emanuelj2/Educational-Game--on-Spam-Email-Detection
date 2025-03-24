@@ -7,7 +7,7 @@ try {
     connection = mysql.createConnection({
         host: '127.0.0.1',
         user: 'root',
-        database: 'projetDB',
+        database: 'sse',
         password: 'Pass-white28'
     });
 
@@ -23,3 +23,5 @@ try {
 }
 
 module.exports = connection;
+
+//  the data base connects don't change
