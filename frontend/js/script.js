@@ -1,34 +1,32 @@
-document.getElementById("create_account").addEventListener("submit", async (event)=>{
-    event.preventDefault(); //prevent the form from submitting
-    
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const password2 = document.getElementById("reenterPassword").value;
-    const email = document.getElementById("email").value;
-    const age = document.getElementById("age").value;
+document.getElementById('registerForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
 
-    if(password !== password2){
-        alert("Passwords do not match");
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const password2 = document.getElementById('password2').value;
+    const age = document.getElementById('age').value;
+    const message = document.getElementById('message');
+
+    if (password !== password2) {
+        message.innerText = 'Passwords do not match!';
         return;
     }
 
-    try{
-        const response = await fetch("/createAccount", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({username, password, email, age})
+    try {
+        const response = await fetch('http://localhost:3000/api/addUser', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password, password2, age })
         });
 
         const data = await response.json();
-        if(data.success){
-            alert("Account created successfully");
-            window.location.href = "/login";
-        }else{
-            alert(data.message);
+        message.innerText = data.message || data.error;
+
+        if (response.ok) {
+            document.getElementById('registerForm').reset();
         }
-    }catch(err){
-        console.log("Error: ",err);
+    } catch (error) {
+        message.innerText = 'An error occurred. Please try again.';
     }
 });
