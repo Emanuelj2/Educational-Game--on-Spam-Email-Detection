@@ -3,26 +3,36 @@ const bcrypt = require('bcrypt');
 const db = require('./db');
 
 const router = express.Router();
-/*
+
+//rout for user login
 router.post('/login', (req, res) =>{
     const { username, password} = req.body;
 
-    db.query('SELECT * FROM users WHERE username = ?', [username], (err, result) =>{
-        if(err || result.length == 0){
-            return res.json({success: false, message: 'User not found'});
+    db.query('SELECT * FROM users WHERE username = ?', [username], (err, results)=> {
+        if(err){
+            return res.status(500).json({error: 'Database error'});
         }
 
-    bcrypt.compare(password, result[0].password, (err, isMatch)=>{
-        if(isMatch){
-            const token = jwt.sign({userId: result[0].id}, 'your_jwt_secret');
-            res.json({success:true, token});
-        }else{
-            res.json({success:false, message:'Invalid Password'});
+        if(results.length === 0){
+            return res.status(401).json({error: 'Invalid username or password'});
         }
-    });
+
+        const user = results[0];
+
+        //compare the password with the hashed password in the db
+        bcrypt.compare(password, user.password, (err, match) =>{
+            if(err){
+                return res.status(500).json({error: "error checking password"});
+            }
+
+            if(!match){
+                return res.status(401).json({error: 'Invalid username or password'});
+            }
+
+            res.json({message: 'login successful', user:{id: user.id, username: user.username }});
+        });
     });
 });
-*/
 
 // Route to register a user
 router.post('/addUser', async (req, res) => {
