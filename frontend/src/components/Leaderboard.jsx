@@ -23,7 +23,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 const MotionCard = motion(Card);
 
-// Sample data - in a real app, this would come from your backend
+// Sample data
 const leaderboardData = {
   allTime: [
     { rank: 1, name: "Spam Master", score: 100, games: 10 },
