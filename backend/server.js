@@ -6,7 +6,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-
+//hello
 app.use('/api', routes);
 
 const PORT = 3000;
