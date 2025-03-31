@@ -14,6 +14,9 @@ import { motion } from 'framer-motion';
 import SecurityIcon from '@mui/icons-material/Security';
 import LockIcon from '@mui/icons-material/Lock';
 import EmailIcon from '@mui/icons-material/Email';
+import axios from "axios";
+
+
 
 const MotionCard = motion(Card);
 
@@ -32,13 +35,28 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =  async (e) => {
     e.preventDefault();
+    try {
+      if (formData.email && formData.password) {
+        const response = await axios.post('http://localhost:3000/api/login', formData, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
 
-    if (formData.email && formData.password) {
-      navigate('/game');
-    } else {
-      setError('Please fill in all fields');
+        if (response.ok) {
+          navigate("/home")
+        } else {
+
+        }
+
+      } else {
+        setError('Please fill in all fields');
+      }
+    } catch (error) {
+      setError(error);
+      console.log(error);
     }
   };
 
