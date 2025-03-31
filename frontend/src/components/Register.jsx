@@ -10,6 +10,10 @@ import {
   Link,
   Alert,
   Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import SecurityIcon from '@mui/icons-material/Security';
@@ -19,6 +23,13 @@ import PersonIcon from '@mui/icons-material/Person';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 
 const MotionCard = motion(Card);
+
+const securityQuestions = [
+  "What is your mother's maiden name?",
+  "What was your first pet's name?",
+  "What was the name of your first school?",
+  "What is your favorite book?",
+];
 
 const Register = () => {
   const navigate = useNavigate();
@@ -157,17 +168,20 @@ const Register = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Security Question"
-                  name="securityQuestion"
-                  value={formData.securityQuestion}
-                  onChange={handleChange}
-                  required
-                  InputProps={{
-                    startAdornment: <QuestionAnswerIcon sx={{ mr: 1, color: 'primary.main' }} />,
-                  }}
-                />
+                <FormControl fullWidth required>
+                  <InputLabel>Security Question</InputLabel>
+                  <Select
+                    name="securityQuestion"
+                    value={formData.securityQuestion}
+                    onChange={handleChange}
+                  >
+                    {securityQuestions.map((question, index) => (
+                      <MenuItem key={index} value={question}>
+                        {question}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -214,4 +228,4 @@ const Register = () => {
   );
 };
 
-export default Register; 
+export default Register;

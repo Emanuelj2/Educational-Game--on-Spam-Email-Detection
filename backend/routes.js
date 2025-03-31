@@ -33,7 +33,7 @@ router.post('/login', (req, res) =>{
         });
     });
 });
-
+// 
 // Route to register a user
 router.post('/addUser', async (req, res) => {
   const { username, email, password, password2, age } = req.body;
