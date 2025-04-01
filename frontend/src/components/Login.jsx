@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Box,
   Card,
@@ -32,13 +33,26 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
 
-    if (formData.email && formData.password) {
-      navigate('/game');
-    } else {
-      setError('Please fill in all fields');
+    if(formData.email && formData.password){
+      try{
+        const response = await axios.post('http://localhost:5000/login', formData);
+  
+        if(response.data.success){
+          //go to the game page
+          navigate('/game');
+        }else{
+          setError(response.data.message || 'Invalid credentials');
+        }
+      }catch(err){
+        setError('An error occurred while logging in. Please try again later.');
+        console.log('Login Error: ', err);
+      }
+    }
+    else{
+      setError('Please fill in all fields')
     }
   };
 
