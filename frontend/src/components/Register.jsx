@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Box,
   Card,
@@ -51,17 +52,33 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
+
     if (formData.password.length < 10) {
       setError('Password must be at least 10 characters long');
       return;
     }
-    navigate('/game');
+     // Send the registration data to the backend
+     try {
+      const response = await axios.post('http://localhost:5000/register', formData);
+
+      if (response.data.success) {
+        // If registration is successful, navigate to the login page
+        navigate('/login');
+      } else {
+        setError(response.data.message || 'Registration failed');
+      }
+    } catch (err) {
+      console.error('Registration error:', err);
+      setError('An error occurred during registration. Please try again later.');
+    }
+
+    //navigate('/game');
   };
 
   return (

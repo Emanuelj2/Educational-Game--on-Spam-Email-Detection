@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Box,
   Card,
@@ -14,9 +15,6 @@ import { motion } from 'framer-motion';
 import SecurityIcon from '@mui/icons-material/Security';
 import LockIcon from '@mui/icons-material/Lock';
 import EmailIcon from '@mui/icons-material/Email';
-import axios from "axios";
-
-
 
 const MotionCard = motion(Card);
 
@@ -35,28 +33,26 @@ const Login = () => {
     });
   };
 
-  const handleSubmit =  async (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    try {
-      if (formData.email && formData.password) {
-        const response = await axios.post('http://localhost:3000/api/login', formData, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
 
-        if (response.ok) {
-          navigate("/home")
-        } else {
-
+    if(formData.email && formData.password){
+      try{
+        const response = await axios.post('http://localhost:5000/login', formData);
+  
+        if(response.data.success){
+          //go to the game page
+          navigate('/game');
+        }else{
+          setError(response.data.message || 'Invalid credentials');
         }
-
-      } else {
-        setError('Please fill in all fields');
+      }catch(err){
+        setError('An error occurred while logging in. Please try again later.');
+        console.log('Login Error: ', err);
       }
-    } catch (error) {
-      setError(error);
-      console.log(error);
+    }
+    else{
+      setError('Please fill in all fields')
     }
   };
 
