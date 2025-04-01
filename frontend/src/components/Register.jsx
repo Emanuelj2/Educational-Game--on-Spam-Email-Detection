@@ -17,6 +17,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import CakeIcon from '@mui/icons-material/Cake';
 
 const MotionCard = motion(Card);
 
@@ -30,6 +31,7 @@ const Register = () => {
     confirmPassword: '',
     securityQuestion: '',
     securityAnswer: '',
+    dateOfBirth: '',
   });
   const [error, setError] = useState('');
 
@@ -48,6 +50,10 @@ const Register = () => {
     }
     if (formData.password.length < 10) {
       setError('Password must be at least 10 characters long');
+      return;
+    }
+    if (!formData.dateOfBirth) {
+      setError('Please enter your date of birth');
       return;
     }
     // Here you would typically make an API call to your backend
@@ -114,6 +120,24 @@ const Register = () => {
                   InputProps={{
                     startAdornment: <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />,
                   }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Date of Birth"
+                  name="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                  required
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  InputProps={{
+                    startAdornment: <CakeIcon sx={{ mr: 1, color: 'primary.main' }} />,
+                  }}
+                  helperText="Enter your birthday (YYYY-MM-DD)"
                 />
               </Grid>
               <Grid item xs={12}>

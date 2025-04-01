@@ -26,11 +26,11 @@ const MotionCard = motion(Card);
 // Sample data - in a real app, this would come from your backend
 const leaderboardData = {
   allTime: [
-    { rank: 1, name: "Spam Master", score: 100, games: 10 },
-    { rank: 2, name: "Email Guardian", score: 95, games: 8 },
-    { rank: 3, name: "Cyber Detective", score: 90, games: 12 },
-    { rank: 4, name: "Spam Fighter", score: 85, games: 7 },
-    { rank: 5, name: "Email Hero", score: 80, games: 9 },
+    { rank: 1, name: "Ayman Anba", score: 100, games: 10 },
+    { rank: 2, name: "Mo", score: 90, games: 10 },
+    { rank: 3, name: "Emanuel", score: 90, games: 10 },
+    { rank: 4, name: "Pierson", score: 90, games: 10 },
+
   ],
   weekly: [
     { rank: 1, name: "Spam Master", score: 100, games: 5 },
