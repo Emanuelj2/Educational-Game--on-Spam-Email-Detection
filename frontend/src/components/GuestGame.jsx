@@ -20,7 +20,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 const MotionCard = motion(Card);
 const MotionPaper = motion(Paper);
 
-// Sample questions - in a real app, these would come from your backend
+// Sample questions
 const questions = [
   {
     id: 1,

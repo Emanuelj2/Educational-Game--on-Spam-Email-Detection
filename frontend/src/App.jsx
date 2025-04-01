@@ -3,7 +3,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box } from '@mui/material';
 
-// Import components
+
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Login from './components/Login';
@@ -12,7 +12,6 @@ import Game from './components/Game';
 import Leaderboard from './components/Leaderboard';
 import GuestGame from './components/GuestGame';
 
-// Create a kid-friendly theme
 const theme = createTheme({
   palette: {
     primary: {
