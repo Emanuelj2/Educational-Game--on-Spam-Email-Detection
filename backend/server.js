@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const db = require('./config/db.js'); // Import the DB connection
+const { db, initializeDatabase } = require('./config/db.js'); // Import the DB connection and init function
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
@@ -8,8 +8,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json
 
-
-//user registration
+// user registration
 app.post('/register', async (req, res) => {
   const { firstName, lastName, email, password, securityQuestion, securityAnswer } = req.body;
 
@@ -57,7 +56,19 @@ app.post('/login', async (req, res) => {
 
     if (match) {
       // Passwords match, login successful
-      return res.status(200).json({ success: true });
+      // Return user info (excluding password)
+      const userInfo = {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email
+      };
+      
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Login successful',
+        user: userInfo
+      });
     } else {
       // Incorrect password
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
@@ -72,31 +83,38 @@ app.post('/login', async (req, res) => {
 //get the questions from the db
 app.get('/questions', async (req, res) => {
   try {
-    // Fetch a random question
-    const [rows] = await db.query('SELECT * FROM questions ORDER BY RAND() LIMIT 1');
+    // Fetch all questions for a game to prevent constant database queries
+    const [rows] = await db.query('SELECT * FROM questions ORDER BY RAND() LIMIT 10');
 
     if (rows.length === 0) {
       return res.status(404).json({ error: 'No questions found' });
     }
 
-    // Format the random question for the frontend
-    const row = rows[0];
-    const formatted = {
+    // Format all questions for the frontend
+    const formattedQuestions = rows.map((row, index) => ({
+      id: index + 1,
       question: row.question,
       options: [row.option1, row.option2, row.option3, row.option4],
-      correctAnswer: row.correctAnswer - 1,  // Adjust correctAnswer if needed
-    };
+      correctAnswer: row.correctAnswer - 1, // Adjust correctAnswer if needed
+    }));
 
-    res.json(formatted);  // Send the formatted random question as the response
+    res.status(200).json(formattedQuestions);  // Send all formatted questions as the response
   } catch (error) {
-    console.error('Error fetching random question:', error);
-    res.status(500).json({ error: 'Failed to fetch question' });
+    console.error('Error fetching questions:', error);
+    res.status(500).json({ error: 'Failed to fetch questions' });
   }
 });
 
 
 
 const PORT = 8080;
-app.listen(PORT, () => {
+
+// Initialize the database before starting the server
+initializeDatabase().then(() => {
+  app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
+  });
+}).catch(err => {
+  console.error('Failed to initialize database:', err);
+  process.exit(1);
 });

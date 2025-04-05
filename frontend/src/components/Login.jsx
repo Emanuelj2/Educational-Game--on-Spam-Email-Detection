@@ -15,11 +15,13 @@ import { motion } from 'framer-motion';
 import SecurityIcon from '@mui/icons-material/Security';
 import LockIcon from '@mui/icons-material/Lock';
 import EmailIcon from '@mui/icons-material/Email';
+import { useAuth } from '../context/AuthContext';
 
 const MotionCard = motion(Card);
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -38,15 +40,20 @@ const Login = () => {
 
     if(formData.email && formData.password){
       try{
-        const response = await axios.post('http://localhost:5000/login', formData);
+        const response = await axios.post('http://localhost:8080/login', formData);
   
         if(response.data.success){
-          //go to the game page
-          navigate('/game');
-        }else{
+          // Store user data in auth context
+          login(response.data.user || {
+            email: formData.email
+          });
+          
+          // Redirect to home page
+          navigate('/');
+        } else {
           setError(response.data.message || 'Invalid credentials');
         }
-      }catch(err){
+      } catch(err){
         setError('An error occurred while logging in. Please try again later.');
         console.log('Login Error: ', err);
       }

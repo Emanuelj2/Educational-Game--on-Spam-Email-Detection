@@ -5,11 +5,14 @@ import SecurityIcon from '@mui/icons-material/Security';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import SchoolIcon from '@mui/icons-material/School';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PersonIcon from '@mui/icons-material/Person';
+import { useAuth } from '../context/AuthContext';
 
 const MotionCard = motion(Card);
 
 const Home = () => {
   const navigate = useNavigate();
+  const { isLoggedIn, user } = useAuth();
 
   return (
     <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -19,32 +22,54 @@ const Home = () => {
         transition={{ duration: 0.8 }}
       >
         <Typography variant="h1" gutterBottom>
-          Welcome to Spam Detective!
+          {isLoggedIn ? `Welcome back to Spam Detective!` : 'Welcome to Spam Detective!'}
         </Typography>
+        
+        {isLoggedIn && (
+          <Typography variant="h5" color="primary" sx={{ mb: 2 }}>
+            <PersonIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+            {user?.email}
+          </Typography>
+        )}
+        
         <Typography variant="h5" color="text.secondary" paragraph>
           Learn how to spot spam emails in a fun and interactive way!
         </Typography>
       </motion.div>
 
       <Box sx={{ my: 4 }}>
-        <Button
-          variant="contained"
-          size="large"
-          startIcon={<PlayArrowIcon />}
-          onClick={() => navigate('/guest-game')}
-          sx={{ mr: 2 }}
-        >
-          Play as Guest
-        </Button>
-        <Button
-          variant="contained"
-          size="large"
-          color="secondary"
-          startIcon={<SchoolIcon />}
-          onClick={() => navigate('/register')}
-        >
-          Create Account
-        </Button>
+        {isLoggedIn ? (
+          <Button
+            variant="contained"
+            size="large"
+            startIcon={<PlayArrowIcon />}
+            onClick={() => navigate('/game')}
+            sx={{ mr: 2 }}
+          >
+            Start Playing
+          </Button>
+        ) : (
+          <>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={<PlayArrowIcon />}
+              onClick={() => navigate('/guest-game')}
+              sx={{ mr: 2 }}
+            >
+              Play as Guest
+            </Button>
+            <Button
+              variant="contained"
+              size="large"
+              color="secondary"
+              startIcon={<SchoolIcon />}
+              onClick={() => navigate('/register')}
+            >
+              Create Account
+            </Button>
+          </>
+        )}
       </Box>
 
       <Grid container spacing={3} sx={{ mt: 4 }}>
@@ -93,7 +118,9 @@ const Home = () => {
                 Track Progress
               </Typography>
               <Typography color="text.secondary">
-                Save your progress and see your improvement over time
+                {isLoggedIn 
+                  ? 'View your learning journey and see your improvement over time'
+                  : 'Create an account to save your progress and track improvement'}
               </Typography>
             </CardContent>
           </MotionCard>

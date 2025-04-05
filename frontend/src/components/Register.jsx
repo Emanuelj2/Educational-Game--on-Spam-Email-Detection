@@ -22,6 +22,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import { useAuth } from '../context/AuthContext';
 
 const MotionCard = motion(Card);
 
@@ -34,6 +35,7 @@ const securityQuestions = [
 
 const Register = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -68,8 +70,32 @@ const Register = () => {
       const response = await axios.post('http://localhost:8080/register', formData);
 
       if (response.data.success) {
-        // If registration is successful, navigate to the login page
-        navigate('/login');
+        // If registration is successful, attempt to log in automatically
+        try {
+          const loginResponse = await axios.post('http://localhost:8080/login', {
+            email: formData.email,
+            password: formData.password
+          });
+          
+          if (loginResponse.data.success) {
+            // Store user data in auth context
+            login(loginResponse.data.user || {
+              email: formData.email,
+              firstName: formData.firstName,
+              lastName: formData.lastName
+            });
+            
+            // Navigate to home page
+            navigate('/');
+          } else {
+            // If auto-login fails, still go to login page
+            navigate('/login');
+          }
+        } catch (loginErr) {
+          console.error('Auto-login error:', loginErr);
+          // If auto-login fails, go to login page
+          navigate('/login');
+        }
       } else {
         setError(response.data.message || 'Registration failed');
       }
@@ -77,8 +103,6 @@ const Register = () => {
       console.error('Registration error:', err);
       setError('An error occurred during registration. Please try again later.');
     }
-
-    //navigate('/game');
   };
 
   return (
