@@ -1,4 +1,4 @@
-/backend/config/db.js
+/backend/config
 /.idea
 /backend/node_modules
 /frontend/node_modules
