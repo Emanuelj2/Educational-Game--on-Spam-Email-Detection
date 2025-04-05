@@ -65,7 +65,7 @@ const Register = () => {
     }
      // Send the registration data to the backend
      try {
-      const response = await axios.post('http://localhost:5000/register', formData);
+      const response = await axios.post('http://localhost:8080/register', formData);
 
       if (response.data.success) {
         // If registration is successful, navigate to the login page

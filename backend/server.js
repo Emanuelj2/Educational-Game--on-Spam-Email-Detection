@@ -32,7 +32,7 @@ app.post('/register', async (req, res) => {
 
     res.status(201).json({ success: true, message: 'User registered successfully!' });
   } catch (error) {
-    console.error(error);
+    console.error("Error occurred while registering" + error);
     res.status(500).json({ message: 'An error occurred during registration.' });
   }
 });
@@ -96,7 +96,7 @@ app.get('/questions', async (req, res) => {
 
 
 
-const PORT = 5000;
+const PORT = 8080;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
