@@ -1,12 +1,12 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const { db, initializeDatabase } = require('./config/db.js'); // Import the DB connection and init function
+const { pool, initializeDatabase } = require('./config/db.js');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.json());
 
 // user registration
 app.post('/register', async (req, res) => {
@@ -14,7 +14,7 @@ app.post('/register', async (req, res) => {
 
   try {
     // Check if the email already exists in the database
-    const [existingUser] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    const [existingUser] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
 
     if (existingUser.length > 0) {
       return res.status(400).json({ message: 'Email already registered' });
@@ -24,7 +24,7 @@ app.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insert the new user into the database
-    const [result] = await db.query(
+    const [result] = await pool.query(
       'INSERT INTO users (firstName, lastName, email, password, securityQuestion, securityAnswer) VALUES (?, ?, ?, ?, ?, ?)',
       [firstName, lastName, email, hashedPassword, securityQuestion, securityAnswer]
     );
@@ -36,15 +36,13 @@ app.post('/register', async (req, res) => {
   }
 });
 
-
-
 //user Login
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
     // Query to find the user by email
-    const [result] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    const [result] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
 
     if (result.length === 0) {
       return res.status(400).json({ success: false, message: 'User not found' });
@@ -79,12 +77,11 @@ app.post('/login', async (req, res) => {
   }
 });
 
-
 //get the questions from the db
 app.get('/questions', async (req, res) => {
   try {
     // Fetch all questions for a game to prevent constant database queries
-    const [rows] = await db.query('SELECT * FROM questions ORDER BY RAND() LIMIT 10');
+    const [rows] = await pool.query('SELECT * FROM questions ORDER BY RAND() LIMIT 10');
 
     if (rows.length === 0) {
       return res.status(404).json({ error: 'No questions found' });
@@ -104,8 +101,6 @@ app.get('/questions', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch questions' });
   }
 });
-
-
 
 const PORT = 8080;
 
