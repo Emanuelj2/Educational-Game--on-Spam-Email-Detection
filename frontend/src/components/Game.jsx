@@ -17,12 +17,14 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import TimerIcon from '@mui/icons-material/Timer';
+import { useAuth } from '../context/AuthContext';
 
 const MotionCard = motion(Card);
 const MotionPaper = motion(Paper);
 
 const Game = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -32,6 +34,7 @@ const Game = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [submittingScore, setSubmittingScore] = useState(false);
 
   // Fetch questions from the API
   useEffect(() => {
@@ -61,14 +64,29 @@ const Game = () => {
     }
   }, [timeLeft, gameOver, loading]);
 
+  const submitScore = async () => {
+    if (!user?.id) return;
+    
+    setSubmittingScore(true);
+    try {
+      const scorePercentage = (score / questions.length) * 100;
+      await axios.post('http://localhost:8080/submit-score', {
+        userId: user.id,
+        score: scorePercentage
+      });
+    } catch (error) {
+      console.error('Error submitting score:', error);
+    } finally {
+      setSubmittingScore(false);
+    }
+  };
+
   const handleAnswer = (selectedAnswer) => {
     setSelectedAnswer(selectedAnswer);
     if (selectedAnswer === questions[currentQuestion].correctAnswer) {
       setScore(score + 1);
-      setShowFeedback(true);
-    } else {
-      setShowFeedback(true);
     }
+    setShowFeedback(true);
 
     setTimeout(() => {
       if (currentQuestion < questions.length - 1) {
@@ -78,6 +96,7 @@ const Game = () => {
         setSelectedAnswer(null);
       } else {
         setGameOver(true);
+        submitScore(); // Submit score when game ends
       }
     }, 2000);
   };
@@ -89,6 +108,7 @@ const Game = () => {
       setSelectedAnswer(null);
     } else {
       setGameOver(true);
+      submitScore(); // Submit score when game ends due to time up
     }
   };
 
@@ -171,14 +191,28 @@ const Game = () => {
             <Typography variant="h6" color="text.secondary" paragraph>
               {getScoreMessage()}
             </Typography>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => navigate('/')}
-              sx={{ mt: 2 }}
-            >
-              Play Again
-            </Button>
+            {submittingScore ? (
+              <CircularProgress size={24} sx={{ mb: 2 }} />
+            ) : (
+              <>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => navigate('/leaderboard')}
+                  sx={{ mt: 2, mr: 2 }}
+                >
+                  View Leaderboard
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  onClick={() => window.location.reload()}
+                  sx={{ mt: 2 }}
+                >
+                  Play Again
+                </Button>
+              </>
+            )}
           </CardContent>
         </MotionCard>
       </Box>

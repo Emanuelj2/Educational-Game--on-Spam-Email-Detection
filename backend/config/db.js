@@ -60,6 +60,20 @@ async function initializeDatabase() {
       )
     `);
 
+    // Create leaderboard table if it doesn't exist
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS leaderboard (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        userId INT NOT NULL,
+        playerName VARCHAR(255) NOT NULL,
+        totalPoints INT NOT NULL DEFAULT 0,
+        gamesPlayed INT NOT NULL DEFAULT 0,
+        lastGameDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (userId) REFERENCES users(id),
+        UNIQUE KEY unique_user (userId)
+      )
+    `);
+
     // Check if questions table is empty
     const [rows] = await pool.query('SELECT COUNT(*) as count FROM questions');
     if (rows[0].count === 0) {

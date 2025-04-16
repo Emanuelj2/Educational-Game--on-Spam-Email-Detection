@@ -102,6 +102,114 @@ app.get('/questions', async (req, res) => {
   }
 });
 
+// Submit game score and update leaderboard
+app.post('/submit-score', async (req, res) => {
+  const { userId, score } = req.body;
+
+  try {
+    // Get user information
+    const [userResult] = await pool.query(
+      'SELECT firstName, lastName FROM users WHERE id = ?',
+      [userId]
+    );
+
+    if (userResult.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const playerName = `${userResult[0].firstName} ${userResult[0].lastName}`;
+    const points = Math.round(score); // Convert score percentage to points
+
+    // Begin transaction
+    const connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    try {
+      // Check if user exists in leaderboard
+      const [leaderboardResult] = await connection.query(
+        'SELECT * FROM leaderboard WHERE userId = ?',
+        [userId]
+      );
+
+      if (leaderboardResult.length === 0) {
+        // Insert new record
+        await connection.query(
+          'INSERT INTO leaderboard (userId, playerName, totalPoints, gamesPlayed, lastGameDate) VALUES (?, ?, ?, 1, NOW())',
+          [userId, playerName, points]
+        );
+      } else {
+        // Update existing record
+        await connection.query(
+          'UPDATE leaderboard SET totalPoints = totalPoints + ?, gamesPlayed = gamesPlayed + 1, lastGameDate = NOW() WHERE userId = ?',
+          [points, userId]
+        );
+      }
+
+      await connection.commit();
+      res.status(200).json({ success: true, message: 'Score submitted successfully' });
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    console.error('Error submitting score:', error);
+    res.status(500).json({ error: 'Failed to submit score' });
+  }
+});
+
+// Get leaderboard data
+app.get('/leaderboard', async (req, res) => {
+  const { type } = req.query; // 'weekly' or 'allTime'
+  
+  try {
+    let query;
+    if (type === 'weekly') {
+      // Get top 10 players for the current week
+      query = `
+        SELECT 
+          playerName,
+          totalPoints,
+          gamesPlayed,
+          lastGameDate
+        FROM leaderboard
+        WHERE YEARWEEK(lastGameDate) = YEARWEEK(NOW())
+        ORDER BY totalPoints DESC
+        LIMIT 10
+      `;
+    } else {
+      // Get top 10 players of all time
+      query = `
+        SELECT 
+          playerName,
+          totalPoints,
+          gamesPlayed,
+          lastGameDate
+        FROM leaderboard
+        ORDER BY totalPoints DESC
+        LIMIT 10
+      `;
+    }
+
+    const [results] = await pool.query(query);
+    
+    // Format the results
+    const formattedResults = results.map((row, index) => ({
+      rank: index + 1,
+      playerName: row.playerName,
+      totalPoints: row.totalPoints,
+      gamesPlayed: row.gamesPlayed,
+      lastPlayed: row.lastGameDate
+    }));
+
+    res.status(200).json(formattedResults);
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    res.status(500).json({ error: 'Failed to fetch leaderboard data' });
+  }
+});
+
 const PORT = 8080;
 
 // Initialize the database before starting the server
