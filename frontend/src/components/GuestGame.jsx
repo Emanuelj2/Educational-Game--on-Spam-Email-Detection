@@ -36,7 +36,7 @@ const GuestGame = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/questions');
+        const response = await axios.get('https://api.spamdetection.click/questions');
         setQuestions(response.data);
         setLoading(false);
       } catch (err) {

@@ -67,12 +67,12 @@ const Register = () => {
     }
      // Send the registration data to the backend
      try {
-      const response = await axios.post('http://localhost:8080/register', formData);
+      const response = await axios.post('https://api.spamdetection.click/register', formData);
 
       if (response.data.success) {
         // If registration is successful, attempt to log in automatically
         try {
-          const loginResponse = await axios.post('http://localhost:8080/login', {
+          const loginResponse = await axios.post('https://api.spamdetection.click/login', {
             email: formData.email,
             password: formData.password
           });

@@ -3,6 +3,13 @@ const bcrypt = require('bcryptjs');
 const { pool, initializeDatabase } = require('./config/db.js');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const winston = require('winston')
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [new winston.transports.Console()],
+});
 
 const app = express();
 app.use(cors());
@@ -31,7 +38,7 @@ app.post('/register', async (req, res) => {
 
     res.status(201).json({ success: true, message: 'User registered successfully!' });
   } catch (error) {
-    console.error("Error occurred while registering" + error);
+    logger.error("Error occurred while registering" + error);
     res.status(500).json({ message: 'An error occurred during registration.' });
   }
 });
@@ -72,7 +79,7 @@ app.post('/login', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }
   } catch (error) {
-    console.error('Database error:', error);
+    logger.error('Database error:', error);
     return res.status(500).json({ success: false, message: 'Database error' });
   }
 });
@@ -97,7 +104,7 @@ app.get('/questions', async (req, res) => {
 
     res.status(200).json(formattedQuestions);  // Send all formatted questions as the response
   } catch (error) {
-    console.error('Error fetching questions:', error);
+    logger.error('Error fetching questions:', error);
     res.status(500).json({ error: 'Failed to fetch questions' });
   }
 });
@@ -154,7 +161,7 @@ app.post('/submit-score', async (req, res) => {
       connection.release();
     }
   } catch (error) {
-    console.error('Error submitting score:', error);
+    logger.error('Error submitting score:', error);
     res.status(500).json({ error: 'Failed to submit score' });
   }
 });
@@ -205,7 +212,7 @@ app.get('/leaderboard', async (req, res) => {
 
     res.status(200).json(formattedResults);
   } catch (error) {
-    console.error('Error fetching leaderboard:', error);
+    logger.error('Error fetching leaderboard:', error);
     res.status(500).json({ error: 'Failed to fetch leaderboard data' });
   }
 });
@@ -214,10 +221,10 @@ const PORT = 8080;
 
 // Initialize the database before starting the server
 initializeDatabase().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+  app.listen(PORT, '0.0.0.0',() => {
+    logger.info( `Server running on port 0.0.0.0:${PORT}`);
   });
 }).catch(err => {
-  console.error('Failed to initialize database:', err);
+  logger.error('Failed to initialize database:', err);
   process.exit(1);
 });

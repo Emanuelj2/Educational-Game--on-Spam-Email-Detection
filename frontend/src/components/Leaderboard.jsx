@@ -46,7 +46,7 @@ const Leaderboard = () => {
     setLoading(true);
     try {
       const type = tabValue === 0 ? 'allTime' : 'weekly';
-      const response = await axios.get(`http://localhost:8080/leaderboard?type=${type}`);
+      const response = await axios.get(`https://api.spamdetection.click/leaderboard?type=${type}`);
       setLeaderboardData(response.data);
       setError(null);
     } catch (error) {

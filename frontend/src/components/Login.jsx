@@ -40,7 +40,7 @@ const Login = () => {
 
     if(formData.email && formData.password){
       try{
-        const response = await axios.post('http://localhost:8080/login', formData);
+        const response = await axios.post('https://api.spamdetection.click/login', formData);
   
         if(response.data.success){
           // Store user data in auth context

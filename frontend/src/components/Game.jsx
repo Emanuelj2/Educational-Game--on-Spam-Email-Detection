@@ -36,11 +36,12 @@ const Game = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [submittingScore, setSubmittingScore] = useState(false);
 
+  const apiEndpoint = ''
   // Fetch questions from the API
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/questions');
+        const response = await axios.get('https://api.spamdetection.click/questions');
         setQuestions(response.data);
         setLoading(false);
       } catch (err) {
@@ -70,7 +71,7 @@ const Game = () => {
     setSubmittingScore(true);
     try {
       const scorePercentage = (score / questions.length) * 100;
-      await axios.post('http://localhost:8080/submit-score', {
+      await axios.post('https://api.spamdetection.click/submit-score', {
         userId: user.id,
         score: scorePercentage
       });

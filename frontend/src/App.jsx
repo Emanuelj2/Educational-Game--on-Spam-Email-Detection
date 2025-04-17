@@ -30,21 +30,96 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Comic Sans MS", cursive, sans-serif',
+    fontFamily: [
+      'Comic Sans MS',
+      'Comic Sans',
+      'Chalkboard SE',
+      'cursive',
+      '-apple-system',
+      'BlinkMacSystemFont',
+      'Segoe UI',
+      'Roboto',
+      'Arial',
+      'sans-serif'
+    ].join(','),
     h1: {
       fontSize: '2.5rem',
       fontWeight: 'bold',
       color: '#4CAF50',
+      fontFamily: [
+        'Comic Sans MS',
+        'Comic Sans',
+        'Chalkboard SE',
+        'cursive',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        'Segoe UI',
+        'Roboto',
+        'Arial',
+        'sans-serif'
+      ].join(','),
     },
     h2: {
       fontSize: '2rem',
       fontWeight: 'bold',
       color: '#FF9800',
+      fontFamily: [
+        'Comic Sans MS',
+        'Comic Sans',
+        'Chalkboard SE',
+        'cursive',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        'Segoe UI',
+        'Roboto',
+        'Arial',
+        'sans-serif'
+      ].join(','),
+    },
+    h4: {
+      fontFamily: [
+        'Comic Sans MS',
+        'Comic Sans',
+        'Chalkboard SE',
+        'cursive',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        'Segoe UI',
+        'Roboto',
+        'Arial',
+        'sans-serif'
+      ].join(','),
+    },
+    h5: {
+      fontFamily: [
+        'Comic Sans MS',
+        'Comic Sans',
+        'Chalkboard SE',
+        'cursive',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        'Segoe UI',
+        'Roboto',
+        'Arial',
+        'sans-serif'
+      ].join(','),
     },
     button: {
       textTransform: 'none',
       borderRadius: '25px',
       padding: '10px 20px',
+      fontFamily: [
+        'Comic Sans MS',
+        'Comic Sans',
+        'Chalkboard SE',
+        'cursive',
+        '-apple-system',
+        'BlinkMacSystemFont',
+        'Segoe UI',
+        'Roboto',
+        'Arial',
+        'sans-serif'
+      ].join(','),
     },
   },
   components: {
