@@ -67,12 +67,42 @@ const Game = () => {
     }
   }, [timeLeft, gameOver, loading]);
 
-  const submitScore = async () => {
+  const handleAnswer = (selectedAnswer) => {
+    setSelectedAnswer(selectedAnswer);
+    
+    // Track if the answer is correct
+    const isCorrect = selectedAnswer === questions[currentQuestion].correctAnswer;
+    
+    // Update the score if answer is correct
+    if (isCorrect) {
+      setScore(score + 1);
+    }
+    
+    setShowFeedback(true);
+
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        // Not the last question, move to next
+        setCurrentQuestion(currentQuestion + 1);
+        setShowFeedback(false);
+        setTimeLeft(30);
+        setSelectedAnswer(null);
+      } else {
+
+        const finalScore = isCorrect ? score + 1 : score;
+        setGameOver(true);
+        submitScoreWithValue(finalScore);
+      }
+    }, 2000);
+  };
+  
+  // New function that takes the exact score to submit
+  const submitScoreWithValue = async (finalScore) => {
     if (!user?.id) return;
     
     setSubmittingScore(true);
     try {
-      const scorePercentage = (score / questions.length) * 100;
+      const scorePercentage = (finalScore / questions.length) * 100;
       
       // Submit to leaderboard
       await axios.post('https://api.spamdetection.click/submit-score', {
@@ -87,10 +117,12 @@ const Game = () => {
       await axios.post('https://api.spamdetection.click/addGame', {
         userId: user.id,
         score: scorePercentage,
-        correctAnswers: score,
+        correctAnswers: finalScore,
         totalQuestions: questions.length,
         completionTime: completionTime
       });
+      
+      console.log('Game submitted with score:', finalScore, 'out of', questions.length);
       
     } catch (error) {
       console.error('Error submitting score:', error);
@@ -99,24 +131,8 @@ const Game = () => {
     }
   };
 
-  const handleAnswer = (selectedAnswer) => {
-    setSelectedAnswer(selectedAnswer);
-    if (selectedAnswer === questions[currentQuestion].correctAnswer) {
-      setScore(score + 1);
-    }
-    setShowFeedback(true);
-
-    setTimeout(() => {
-      if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-        setShowFeedback(false);
-        setTimeLeft(30);
-        setSelectedAnswer(null);
-      } else {
-        setGameOver(true);
-        submitScore(); // Submit score when game ends
-      }
-    }, 2000);
+  const submitScore = async () => {
+    submitScoreWithValue(score);
   };
 
   const handleTimeUp = () => {
@@ -126,7 +142,7 @@ const Game = () => {
       setSelectedAnswer(null);
     } else {
       setGameOver(true);
-      submitScore(); // Submit score when game ends due to time up
+      submitScore(); // This case doesn't need special handling as no score update is happening
     }
   };
 
