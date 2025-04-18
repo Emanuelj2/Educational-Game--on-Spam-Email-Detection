@@ -33,6 +33,7 @@ const Leaderboard = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  let [rank] = useState(1);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -58,10 +59,7 @@ const Leaderboard = () => {
   };
 
   const getRankIcon = (rank) => {
-    if (rank === 1) return <StarIcon sx={{ color: '#FFD700' }} />;
-    if (rank === 2) return <StarIcon sx={{ color: '#C0C0C0' }} />;
-    if (rank === 3) return <StarIcon sx={{ color: '#CD7F32' }} />;
-    return <StarBorderIcon />;
+    return rank;
   };
 
   if (error) {
@@ -148,8 +146,7 @@ const Leaderboard = () => {
                     >
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          {getRankIcon(player.rank)}
-                          <Typography>{player.rank}</Typography>
+                          <Typography>{rank++}</Typography>
                         </Box>
                       </TableCell>
                       <TableCell>
