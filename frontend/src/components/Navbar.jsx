@@ -44,7 +44,10 @@ const Navbar = () => {
     { text: 'Home', icon: <HomeIcon />, to: '/' },
     { text: 'Leaderboard', icon: <EmojiEventsIcon />, to: '/leaderboard' },
     ...(isLoggedIn 
-      ? [{ text: 'Play Game', to: '/game' }]
+      ? [
+          { text: 'Play Game', to: '/game' },
+                {text: 'Profile', to: '/profile' },
+            ]
       : [
           { text: 'Login', to: '/login' },
           { text: 'Register', to: '/register' }
