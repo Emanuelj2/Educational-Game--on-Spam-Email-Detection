@@ -144,18 +144,21 @@ async function initializeDatabase() {
       console.log('Questions data inserted successfully');
     }
 
-    // Create scores table if it doesn't exist
+    // Create game_history table
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS scores (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        userId INT NOT NULL,
+      CREATE TABLE IF NOT EXISTS game_history (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
         score INT NOT NULL,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (userId) REFERENCES users(id)
+        correct_answers INT NOT NULL,
+        total_questions INT NOT NULL,
+        completion_time INT NOT NULL,
+        played_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id)
       )
     `);
 
-    console.log('Database tables initialized successfully');
+    console.log('Database initialized successfully');
   } catch (error) {
     console.error('Error initializing database:', error);
     throw error;

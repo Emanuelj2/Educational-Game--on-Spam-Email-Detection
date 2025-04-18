@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const winston = require('winston')
 
+// logger framework
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
@@ -199,27 +200,83 @@ app.get('/leaderboard', async (req, res) => {
       `;
     }
 
-    const [results] = await pool.query(query);
-    
-    // Format the results
-    const formattedResults = results.map((row, index) => ({
-      rank: index + 1,
-      playerName: row.playerName,
-      totalPoints: row.totalPoints,
-      gamesPlayed: row.gamesPlayed,
-      lastPlayed: row.lastGameDate
-    }));
-
-    res.status(200).json(formattedResults);
+    const [rows] = await pool.query(query);
+    res.json(rows);
   } catch (error) {
     logger.error('Error fetching leaderboard:', error);
     res.status(500).json({ error: 'Failed to fetch leaderboard data' });
   }
 });
 
-const PORT = 8080;
+// Get game history
+app.get('/history', async (req, res) => {
+  const userId = req.query.userId;
 
-// Initialize the database before starting the server
+  try {
+
+    let query = `
+      SELECT 
+        id,
+        score,
+        correct_answers,
+        total_questions,
+        completion_time,
+        played_at
+      FROM game_history
+      WHERE user_id = ?
+    `;
+    
+    const queryParams = [];
+    if (userId) {
+      queryParams.push(userId);
+    }
+    else{
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    query += ` ORDER BY played_at DESC LIMIT 10`;
+    
+    const [rows] = await pool.query(query, queryParams);
+    res.json(rows);
+  } catch (error) {
+    logger.error('Error fetching game history:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Add new game record
+app.post('/addGame', async (req, res) => {
+  const { userId, score, correctAnswers, totalQuestions, completionTime } = req.body;
+
+  try {
+    // Check if user exists (if userId is provided)
+    if (userId) {
+      const [userResult] = await pool.query('SELECT id FROM users WHERE id = ?', [userId]);
+      if (userResult.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+    }
+
+    // Insert game record
+    const [result] = await pool.query(
+      `INSERT INTO game_history 
+        (user_id, score, correct_answers, total_questions, completion_time) 
+      VALUES (?, ?, ?, ?, ?)`,
+      [userId || null, score, correctAnswers, totalQuestions, completionTime]
+    );
+
+    res.status(201).json({
+      id: result.insertId,
+      message: 'Game history recorded successfully'
+    });
+  } catch (error) {
+    logger.error('Error recording game history:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Start the server
+const PORT = process.env.PORT || 8080;
 initializeDatabase().then(() => {
   app.listen(PORT, '0.0.0.0',() => {
     logger.info( `Server running on port 0.0.0.0:${PORT}`);

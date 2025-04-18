@@ -11,6 +11,7 @@ import Register from './components/Register';
 import Game from './components/Game';
 import Leaderboard from './components/Leaderboard';
 import GuestGame from './components/GuestGame';
+import Profile from './pages/Profile';
 
 const theme = createTheme({
   palette: {
@@ -158,6 +159,7 @@ function App() {
                 <Route path="/game" element={<Game />} />
                 <Route path="/guest-game" element={<GuestGame />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/profile" element={<Profile />} />
               </Routes>
             </Box>
           </Box>

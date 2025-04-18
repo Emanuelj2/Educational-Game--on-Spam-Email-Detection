@@ -165,6 +165,15 @@ const Navbar = () => {
                   <MenuItem disabled>
                     {user?.email}
                   </MenuItem>
+                  <MenuItem 
+                    onClick={() => {
+                      navigate('/profile');
+                      handleMenuClose();
+                    }}
+                  >
+                    <AccountCircleIcon fontSize="small" sx={{ mr: 1 }} />
+                    Profile
+                  </MenuItem>
                   <MenuItem onClick={handleLogout}>
                     <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
                     Logout

@@ -35,6 +35,7 @@ const Game = () => {
   const [error, setError] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [submittingScore, setSubmittingScore] = useState(false);
+  const [gameStartTime, setGameStartTime] = useState(null);
 
   const apiEndpoint = ''
   // Fetch questions from the API
@@ -44,6 +45,7 @@ const Game = () => {
         const response = await axios.get('https://api.spamdetection.click/questions');
         setQuestions(response.data);
         setLoading(false);
+        setGameStartTime(Date.now()); // Record when the game starts
       } catch (err) {
         console.error('Error fetching questions:', err);
         setError('Failed to load questions. Please try again.');
@@ -71,10 +73,25 @@ const Game = () => {
     setSubmittingScore(true);
     try {
       const scorePercentage = (score / questions.length) * 100;
+      
+      // Submit to leaderboard
       await axios.post('https://api.spamdetection.click/submit-score', {
         userId: user.id,
         score: scorePercentage
       });
+      
+      // Calculate game completion time in milliseconds
+      const completionTime = Date.now() - gameStartTime;
+      
+      // Add to game history
+      await axios.post('https://api.spamdetection.click/addGame', {
+        userId: user.id,
+        score: scorePercentage,
+        correctAnswers: score,
+        totalQuestions: questions.length,
+        completionTime: completionTime
+      });
+      
     } catch (error) {
       console.error('Error submitting score:', error);
     } finally {
